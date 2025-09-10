@@ -12,6 +12,8 @@
  Date        Author             Description
  ----------  -----------------  ----------------------------------------------
  2025-09-07  Chami Abdellah          Initial version
+ 2025-09-10  Chami Abdellah          Update script to remove main
+
 ===============================================================================
 """
 
@@ -25,7 +27,7 @@ import time
 jiraOptions = {'server': "https://xlibxli.atlassian.net/"}
 
 # Jira client instance with authentication
-jira = JIRA(options=jiraOptions, basic_auth=("", ""))
+jira = JIRA(options=jiraOptions, basic_auth=("abdellah.chami_external@hse.com", "ATATT3xFfGF0si73sVDjwDqcL97NLCSKcwlWvKKsfvYiuKJL6YLkrbwMFurskSN1XP35_vLuem-2BW_jchAYYaVu6srwDoHnAwMPycFEgMwe1QHc0ukxutt7N12aO-h4JzRmIsfV3GlGBe4d9LNSAvOFa3QEUDG8TJue7k0k7I5Df5FUD_kr8mk=F963BBD3"))
 
 
 '''
@@ -95,7 +97,7 @@ main function used to extract data for the assignee
 in:
     assignee: name of the assignee jira user
 '''
-def main(assigneName):
+def StartExtraction(assigneName):
     
     list_issues = []
 
@@ -145,7 +147,7 @@ def main(assigneName):
     elapsed_time = end_time - start_time
     print(f"Elapsed time: {elapsed_time:.2f} seconds")
 
-if __name__ == '__main__':
-    # assignee could be provided as input to the script
-    assignName = "Dehbi, Ayoub, HSE DE (External)"
-    main(assignName)
+# if __name__ == '__main__':
+#     # assignee could be provided as input to the script
+#     assignName = "Chami, Abdellah, HSE DE (External)"
+#     StartExtraction(assignName)
