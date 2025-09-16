@@ -52,7 +52,7 @@ class GitLabAPI:
             List of CommitStats objects
         """
         commits = []
-        for project in self.gl.projects.list(all=True):
+        for project in self.gl.projects.list(membership=True, all=True):
             try:
                 project_commits = project.commits.list(
                     all=True,

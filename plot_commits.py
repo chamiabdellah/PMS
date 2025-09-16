@@ -22,7 +22,7 @@ import numpy as np
 from scipy.interpolate import make_interp_spline
 import pandas as pd
 
-def plot_author_commits(df, author_name, ax):
+def plot_author_commits(df, author_name, ax, plot_type='bar'):
     ax.clear()
     sns.set_theme(style="white")
 
@@ -52,16 +52,18 @@ def plot_author_commits(df, author_name, ax):
     x = np.arange(len(daily_counts))
     y = daily_counts.values
 
-    if len(x) >= 4:
-        x_smooth = np.linspace(x.min(), x.max(), 300)
-        spline = make_interp_spline(x, y, k=3)
-        y_smooth = spline(x_smooth)
+    if plot_type == 'curve':
+        if len(x) >= 4:
+            x_smooth = np.linspace(x.min(), x.max(), 300)
+            spline = make_interp_spline(x, y, k=3)
+            y_smooth = spline(x_smooth)
+        else:
+            x_smooth, y_smooth = x, y
+        ax.fill_between(x_smooth, y_smooth, alpha=0.25, color="#A6C1F8")
+        ax.plot(x_smooth, y_smooth, color="#719DF6", linewidth=2.5)
+        ax.scatter(x, y, edgecolor="#79A4FB", s=80, zorder=5)
     else:
-        x_smooth, y_smooth = x, y
-
-    ax.fill_between(x_smooth, y_smooth, alpha=0.25, color="#A6C1F8")
-    ax.plot(x_smooth, y_smooth, color="#719DF6", linewidth=2.5)
-    ax.scatter(x, y, edgecolor="#79A4FB", s=80, zorder=5)
+        ax.bar(x, y, color="#719DF6", alpha=0.7, edgecolor="#79A4FB")
 
     ax.axhline(avg_commits, color='orange', linestyle='--', linewidth=1.5,
                label=f'Avg: {avg_commits:.2f}')
