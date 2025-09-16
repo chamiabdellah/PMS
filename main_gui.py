@@ -3,7 +3,7 @@ import pandas as pd
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QComboBox, QLabel, QProgressDialog,
-    QSpacerItem, QSizePolicy
+    QSpacerItem, QSizePolicy, QCheckBox
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -16,23 +16,15 @@ from jiraExtract import StartExtraction
 
 # Developer to Jira assignee name mapping
 name_combination = {
-    'AbdellahChami': 'Chami, Abdellah, HSE DE (External)',
-    'Abdellah Chami': 'Chami, Abdellah, HSE DE (External)',
-    'Abdellah': 'Chami, Abdellah, HSE DE (External)',
+    'Abdellah CHAMI': 'Chami, Abdellah, HSE DE (External)',
     'Badreddine Bendriss': 'Bendriss, Badreddine, HSE DE (External)',
-    'yelmorabit': 'Elmorabit, Younes, HSE DE (External)',
     'younes elmorabit': 'Elmorabit, Younes, HSE DE (External)',
-    'YounesElmorabit': 'Elmorabit, Younes, HSE DE (External)',
-    'Yassine El Kasmy': 'ElKasmy, Yassine, HSE DE (External)',
-    'elkasmyyassine': 'ElKasmy, Yassine, HSE DE (External)',
-    'yassineelkasmy': 'ElKasmy, Yassine, HSE DE (External)',
     'ibrahim Ahdadou': 'Ahdadou, Ibrahim, HSE DE (External)',
-    'IbrahimAhdadou': 'Ahdadou, Ibrahim, HSE DE (External)',
-    'ilyass ayach': 'Ayach, Ilyass, HSE DE (External)',
-    'IlyassAyach': 'Ayach, Ilyass, HSE DE (External)',
     'Zakaria Zanati': 'Zanati, Zakaria, HSE DE (External)',
-    'ZakariaZanati': 'Zanati, Zakaria, HSE DE (External)',
-    'Zakaria.Zanati': 'Zanati, Zakaria, HSE DE (External)',
+    'tawfiq khnicha': 'Khnicha, Tawfiq, HSE DE (External)',
+    'Alok Sharma': 'Sharma, Alok, HSE DE',
+    'Anas Boulmane': 'Anas, Boulmane, HSE DE (External)',
+    'Ilia Balashov': 'Balashov, Ilia, HSE DE'
 }
 
 
@@ -86,6 +78,7 @@ class CommitAnalyzer(QWidget):
 
             QComboBox {
                 background-color: #ffffff;
+                color: #000000;
                 border: 1px solid #ccc;
                 border-radius: 6px;
                 padding: 6px 10px;
@@ -126,6 +119,10 @@ class CommitAnalyzer(QWidget):
         self.combo_authors = QComboBox()
         control_layout.addWidget(QLabel("Select Developer:"))
         control_layout.addWidget(self.combo_authors)
+
+        # Curve/Bar checkbox
+        self.checkbox_curve = QCheckBox("Show as curve")
+        control_layout.addWidget(self.checkbox_curve)
 
         # Plot button
         self.btn_plot = QPushButton("Generate Plots")
@@ -193,13 +190,13 @@ class CommitAnalyzer(QWidget):
 
         for ax, canvas in [(self.ax1, self.canvas1), (self.ax2, self.canvas2)]:
             ax.clear()
-            ax.text(0.5, 0.5, "Loading...", ha='center', va='center', fontsize=14, color='gray', alpha=0.6)
+            ax.text(0.5, 0.5, "Loading...", ha='center', va='center', fontsize=14, color='black', alpha=0.6)
             ax.axis('off')
             canvas.draw()
 
         self.btn_plot.setEnabled(False)
 
-        self.progress = QProgressDialog("Jira data extraction ongoing, please wait...", None, 0, 0, self)
+        self.progress = QProgressDialog("Data extraction ongoing, please wait...", None, 0, 0, self)
         self.progress.setWindowTitle("Processing")
         self.progress.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.progress.setCancelButton(None)
@@ -227,7 +224,8 @@ class CommitAnalyzer(QWidget):
         author = self.combo_authors.currentText()
 
         # Plot Git commits
-        plot_author_commits(self.commit_df, author, self.ax1)
+        plot_type = 'curve' if self.checkbox_curve.isChecked() else 'bar'
+        plot_author_commits(self.commit_df, author, self.ax1, plot_type)
         self.ax1.figure.tight_layout()
         self.canvas1.draw()
 
