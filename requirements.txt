@@ -8,3 +8,6 @@ PyQt6
 matplotlib
 rapidfuzz
 jira
+streamlit
+dash
+plotly

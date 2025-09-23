@@ -246,14 +246,24 @@ def extract_commit_info(commit_obj, project):
         }
 
 def extract_commits_info(branch, project):
-    """Extract commit information for a specific branch"""
+    """Extract commit information for a specific branch, filtered by year"""
     results = []
     try:
         commits = project.commits.list(ref_name=branch.name, per_page=100, page=1)
         print(f"Processing {len(commits)} commits from branch: {branch.name}")
     
         with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [executor.submit(extract_commit_info, c, project) for c in commits]
+            futures = []
+
+            for c in commits:
+                # Filter commits by year 2024 and 2025 only
+                commit_date = datetime.strptime(c.committed_date, "%Y-%m-%dT%H:%M:%S.%f%z")
+                if commit_date.year not in [2024, 2025]:
+                    print(f"   ⏩ Skipping commit {c.short_id} from year {commit_date.year}")
+                    continue
+
+                futures.append(executor.submit(extract_commit_info, c, project))
+
             for future in as_completed(futures):
                 result = future.result()
                 if result:
@@ -265,7 +275,8 @@ def extract_commits_info(branch, project):
         print(f"Error processing branch {branch.name}: {e}")
         return []
 
-def write_combined_csv(all_data, filename='combined_gitlab_jira_data.csv'):
+
+def write_combined_csv(all_data, filename='gitlab_jira_data.csv'):
     """Write all combined data to a single CSV file"""
     if not all_data:
         print("No data to write to CSV")
